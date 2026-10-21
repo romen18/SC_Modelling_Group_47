@@ -39,3 +39,14 @@ C = [1, 0, 0, 0, 0, 0;
 D = [0, 0;
     0, 0]; %D matrix
 
+%state space simulation
+sys = ss(A,B,C,D); 
+t = 0:0.01:T; %time vector
+u = ones(2, length(t));
+[y, t_out, x] = lsim(sys, u, t, x0); %simulate system
+
+%plot output
+plot(t_out, y);
+xlabel('Time (s)');
+ylabel('Output y(t)');
+grid on;
