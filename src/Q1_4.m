@@ -96,13 +96,13 @@ a = 7e-2; %m, x average radius of flower
 epsilon = 0.3; %m, flower petal size
 T_p = 10; %s, total print time
 
-x0 = [x_c+a, 0, 0, y_c, 0, 0]; %initial state, starting at right side of ellipsoid
+x0 = [x_c + a + a*epsilon, 0, 0, y_c, 0, 0]; %initial state, starting at right side of ellipsoid
 
 %u calculation for flower
 Omega = (2*pi)/T_p; %rad/s, angular velocity
 x_d = x_c + a*cos(Omega*t) + a*epsilon/2*(cos(6*Omega*t)+cos(4*Omega*t)); %desired x position
 y_d = y_c + a*sin(Omega*t) + a*epsilon/2*(sin(6*Omega*t)-sin(4*Omega*t)); %desired y position
-vx_d = -a*Omega*sin(Omega*t) - a*epsilon*Omega/2*(sin(6*Omega*t)+sin(4*Omega*t)); %desired x velocity
+vx_d = -a*Omega*sin(Omega*t) - a*epsilon*Omega/2*(6*sin(6*Omega*t)+ 4*sin(4*Omega*t)); %desired x velocity
 vy_d = a*Omega*cos(Omega*t) + a*epsilon*Omega/2*(6*cos(6*Omega*t) - 4*cos(4*Omega*t)); %desired y velocity
 ax_d = -a*Omega^2*cos(Omega*t) - a*epsilon*Omega^2/2*(36*cos(6*Omega*t) + 16*cos(4*Omega*t)); %desired x acceleration
 ay_d = -a*Omega^2*sin(Omega*t) + a*epsilon*Omega^2/2*(-36*sin(6*Omega*t) + 16*sin(4*Omega*t)); %desired y acceleration
