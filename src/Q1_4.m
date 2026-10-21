@@ -16,7 +16,7 @@ x_c = d_x/2; %m, x center of ellipsoid
 y_c = d_y/2; %m, y center of ellipsoid
 a = 7e-2; %m, x radius of ellipsoid
 b = 5e-2; %m, y radius of ellipsoid
-T = 10; %s, total print time
+T_p = 10; %s, total print time
 
 %initial values and A,B,C,D 
 % with x = [x, vx, i_x, y, vy, i_y]^T
@@ -39,14 +39,35 @@ C = [1, 0, 0, 0, 0, 0;
 D = [0, 0;
     0, 0]; %D matrix
 
+%calculation of u
+t = 0:0.01:T_p; %time vector
+
+Omega = (2*pi)/T_p; %rad/s, angular velocity
+x_d = x_c + a*cos(Omega*t); %desired x position
+y_d = y_c + b*sin(Omega*t); %desired y position
+vx_d = -a*Omega*sin(Omega*t); %desired x velocity
+vy_d = b*Omega*cos(Omega*t); %desired y velocity
+ax_d = -a*Omega^2*cos(Omega*t); %desired x acceleration
+ay_d = -b*Omega^2*sin(Omega*t); %desired y acceleration
+jx_d = a*Omega^3*sin(Omega*t); %desired x jerk
+jy_d = -b*Omega^3*cos(Omega*t); %desired y jerk
+
+ix_d = (M*ax_d + bx*vx_d)/g; %desired x current
+iy_d = (M*ay_d + by*vy_d)/g; %desired y current 
+ix_d_dot = (M*jx_d + bx*ax_d)/g; %desired x change in current
+iy_d_dot = (M*jy_d + by*ay_d)/g; %desired y change in current
+
+u_x = L_m*ix_d_dot + R_m*ix_d + K_m*vx_d/r_m;
+u_y = L_m*iy_d_dot + R_m*iy_d + K_m*vy_d/r_m;
+
+u = [u_x; u_y]; %control input vector
+
 %state space simulation
 sys = ss(A,B,C,D); 
-t = 0:0.01:T; %time vector
-u = ones(2, length(t));
 [y, t_out, x] = lsim(sys, u, t, x0); %simulate system
 
-%plot output
-plot(t_out, y);
-xlabel('Time (s)');
-ylabel('Output y(t)');
+
+plot(y(:,1), y(:,2));
+xlabel('x (m)');
+ylabel('y (m)');
 grid on;
