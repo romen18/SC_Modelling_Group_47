@@ -17,9 +17,9 @@ R_n = 14; %Ohm, Nozzle resistor (gotten from 24V, 40W heater)
 
 %other constants
 T_e = 298; %K, Environment temperature
-mu_r = 0.003; , Bearing friction rolling
-mu_lx = 0.03; , Bearing friction linear x-direction
-mu_ly = 0.03; , Bearing friction linear y-direction
+mu_r = 0.003; %Bearing friction rolling
+mu_lx = 0.03; %Bearing friction linear x-direction
+mu_ly = 0.03; %Bearing friction linear y-direction
 T_b = 323; %K, Print bed temperature
 d_x = 0.3; %m, Print area dimension x
 d_y = 0.3; %m, Print area dimension y
