@@ -18,3 +18,24 @@ a = 7e-2; %m, x radius of ellipsoid
 b = 5e-2; %m, y radius of ellipsoid
 T = 10; %s, total print time
 
+%initial values and A,B,C,D 
+% with x = [x, vx, i_x, y, vy, i_y]^T
+% and u = [u_x, u_y]^T
+x0 = [x_c+a, 0, 0, y_c, 0, 0]; %initial state, starting at right side of ellipsoid
+A = [0, 1, 0,                    0, 0, 0;
+    0, -bx/M, g/M,               0, 0, 0;
+    0, -K_m/(r_m*L_m), -R_m/L_m, 0, 0, 0;
+    0, 0, 0,                     0, 1, 0;
+    0, 0, 0,               0, -by/M, g/M;
+    0, 0, 0, 0, -K_m/(r_m*L_m), -R_m/L_m]; %A matrix
+B = [0, 0;
+    0, 0;
+    1/L_m, 0;
+    0, 0;
+    0, 0;
+    0, 1/L_m]; %B matrix
+C = [1, 0, 0, 0, 0, 0;
+    0, 0, 0, 1, 0, 0]; %C matrix that only outputs x and y position
+D = [0, 0;
+    0, 0]; %D matrix
+
