@@ -39,7 +39,7 @@ C = [1, 0, 0, 0, 0, 0;
 D = [0, 0;
     0, 0]; %D matrix
 
-%calculation of u
+%calculation of u for ellipsoid
 t = 0:0.01:T_p; %time vector
 
 Omega = (2*pi)/T_p; %rad/s, angular velocity
@@ -67,7 +67,24 @@ sys = ss(A,B,C,D);
 [y, t_out, x] = lsim(sys, u, t, x0); %simulate system
 
 
-plot(y(:,1), y(:,2));
+figure;
+plot(y(:,1), y(:,2), 'lineWidth', 1.5);
+hold on;
+plot(x_d, y_d, 'r--', 'lineWidth', 1.5);
+hold off;
 xlabel('x (m)');
 ylabel('y (m)');
+title('Nozzle path');
+legend('Actual path', 'Desired path');
+grid on;
+
+figure;
+plot(t, u_x, 'lineWidth', 1.5);
+hold on;
+plot(t, u_y, 'lineWidth', 1.5);
+hold off;
+xlabel('Time (s)');
+ylabel('Control input (V)');
+title('Control inputs');
+legend('u_x', 'u_y');
 grid on;
