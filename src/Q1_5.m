@@ -13,7 +13,7 @@ g = 2*K_m/r_m; %N*m/A, used to get force instead of torque
 
 
 %heating up
-t = 0:0.01:10; %time vector
+t = 0:0.01:160; %time vector
 T_n0 = 25; %deg C, initial temperature
 tau_n = R_tn*C_tn; %s, time constant of nozzle
 T_n_eq = 265; %deg C, the eventual temperature we want to reach
