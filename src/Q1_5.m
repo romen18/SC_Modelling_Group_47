@@ -13,7 +13,7 @@ g = 2*K_m/r_m; %N*m/A, used to get force instead of torque
 
 
 %heating up
-t = 0:0.01:160; %time vector
+t = 0:0.01:500; %time vector
 T_n0 = 25; %deg C, initial temperature
 tau_n = R_tn*C_tn; %s, time constant of nozzle
 T_n_eq = 265; %deg C, the eventual temperature we want to reach
@@ -24,4 +24,18 @@ plot(t, T_n, 'lineWidth', 1.5);
 xlabel('t (s)');
 ylabel('T_n (deg C)');
 title('Temperature during heating up of nozzle 25 deg C to 265 deg C');
+grid on;
+
+%cooling down
+t = 0:0.01:500; %time vector
+T_n0 = 265; %deg C, initial temperature
+tau_n = R_tn*C_tn; %s, time constant of nozzle
+T_n_eq = 25; %deg C, the eventual temperature we want to reach
+T_n = T_n_eq + (T_n0 - T_n_eq)*exp(-t/tau_n); %deg C, temperature of nozzle T_n(t)
+
+figure;
+plot(t, T_n, 'lineWidth', 1.5);
+xlabel('t (s)');
+ylabel('T_n (deg C)');
+title('Temperature during cooling down of nozzle 265 deg C to 25 deg C');
 grid on;

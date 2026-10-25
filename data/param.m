@@ -12,7 +12,7 @@ K_m = 0.05; %N*m/A motor constant
 m = 0.4; %kg, Tool head mass
 C_n = 1e-6; %F, Nozzle capacitor
 C_tn = 25; %J/K, Nozzle thermal capacity (30g aluminium heater block)
-R_tn = 6; %K/W, Nozzle thermal resistance 
+R_tn = 4; %K/W, Nozzle thermal resistance 
 R_n = 14; %Ohm, Nozzle resistor (gotten from 24V, 40W heater)
 
 %other constants
