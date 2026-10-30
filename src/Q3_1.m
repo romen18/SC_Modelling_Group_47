@@ -42,6 +42,12 @@ t_end=500;
 q = q0;
 x = x0;
 
+%empty lists for plotting
+x_full = []; 
+t_full = [];
+q_full = [];
+
+
 while t<t_end
     options = odeset('Events', @(t,x) guards(t, x, p, q)); %options for ode45 to change states with guard functions at curent time
     %runs ode45 until guard triggers
@@ -50,6 +56,11 @@ while t<t_end
     t=t_current(end); %updates t to start next simulation from the end of this state
     x=x_current(end, :)'; %updates x to start next simulation from the end of this state
     p.t_jump = t; %saves time when the jump was made (to use for u values of the ellipse)
+
+    %appends full lists for full plot during printing
+    t_full = [t_full; t_current]; %appends t_current to t_full to match up plotting of x_full
+    x_full = [x_full; x_current]; %appends full x state over every t timestep to t_full
+    q_full = [q_full; q * ones(length(t_current),1)]; %appends q, t times to q_full
 
     %adds plot after state ended so you can see per state how it changed (excluding heating, cooling, and loading states)
     if ~(q == 4 | q == 5 | q == 6)
@@ -64,8 +75,8 @@ while t<t_end
     if q == 4 || q==6
         figure;
         plot(t_current(:),x_current(:,7), 'LineWidth', 1.5);
-        xlabel('T (deg C)');
-        ylabel('t (s)');
+        ylabel('T (deg C)');
+        xlabel('t (s)');
         title('Nozzle temperature during state ', q);
         grid on;
     end
@@ -82,12 +93,40 @@ while t<t_end
     end
 end
 
+figure;
+plot(x_full(:,1), x_full(:,4), 'LineWidth', 1.5);
+xlabel('x (m)');
+ylabel('y (m)');
+title('Nozzle path during full simulation');
+grid on;
+
+figure;
+plot(t_full(:), x_full(:,7), 'LineWidth', 1.5);
+xlabel('t (s)');
+ylabel('T (deg C)');
+title('Nozzle temperature over time');
+grid on;
+
+figure;
+plot(t_full(:), q_full(:), 'LineWidth', 1.5);
+xlabel('t (s)');
+ylabel('q (state)');
+title('States over time');
+grid on;
+
+figure;
+plot(t_full(:), x_full(:,1), 'LineWidth', 1.5);
+xlabel('t (s)');
+ylabel('x (m)');
+title('x position over time');
+grid on;
+
 function [value, isterminal, direction] = guards(t,x,p,q) %guard function using ode45 syntax
     isterminal = 1; %this stops ode45 when the value reaches 0
     direction =  0; %switches states if 0 is crossed from either above or below
     switch q
         case 0 %printing (stops when ellipse is finished)
-            value = t - p.T_p; %time_printing minus the time required to draw an ellipse
+            value = p.t_jump - p.T_p; %time_printing minus the time required to draw an ellipse
         case 1 %stopping and saving location (stops when the speed succesfully reached very close to 0)
             value = sqrt(x(2)^2 + x(5)^2)-0.0001; %total speed is less than 0.1mm/s
         case 2 %moving to wipe tower (stop when distance to (0,0) is <=1mm)
