@@ -13,7 +13,7 @@ t_f=120; %simulation end time
 N=200; %amount of cells in the ellipse
 
 Omega = 2*pi/T_p; %rad/s, angular speed ellipse
-t_path = linspace(0,t_f,10001); %t vector
+t_path = linspace(0,T_p,10001); %t vector
 
 
 %calculate path length of ellipse
