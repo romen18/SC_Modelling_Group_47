@@ -80,10 +80,8 @@ function dx = sys(x,u,p,q)
     dvy = -p.by/p.M*x(5) + p.g/p.M*x(6);
     diy = -p.K_m/(p.r_m*p.L_m)*x(5) -p.R_m/p.L_m*x(6) + 1/p.L_m*u(2);
     
-    %from Q1.5
-    dT_n = 0 %placeholder
-
-
+    %from Q1.5, assuming a constant voltage input and thus u_c=u_n
+    dT_n = 1/p.C_tn * (u_n^2/p.R_n - (x(7)-p.T_e)/p.R_tn);
 
     dx = [dx_pos; dvx; dix; dy_pos; dvy; diy; dT_n]; %output of function (dx_pos because dx is the function name)
 end
