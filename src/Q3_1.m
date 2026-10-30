@@ -30,7 +30,7 @@ p.Omega = (2*pi)/p.T_p; %rad/s, angular velocity for printing ellipse
 %x vector = [x, vx, i_x, y, vy, i_y, T_n]
 
 q0=0; %start in printing state
-x0 = [p.x_c + p.a; 0; 0; p.y; 0; 0; p.T_set]; %starts at right side of ellipse with temperature on
+x0 = [p.x_c + p.a; 0; 0; p.y_c; 0; 0; p.T_set]; %starts at right side of ellipse with temperature on
 %empty variables that will be updated in the state machine when the right state is reached
 p.x_save = 0;
 p.y_save = 0; 
