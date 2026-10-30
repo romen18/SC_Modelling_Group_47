@@ -13,7 +13,7 @@ p.M = M; p.bx = bx; p.by = by; p.g = g; %simplified parameters added to p
 %Heating variables from Q1.5
 p.T_set = 265; %deg C, target nozzle temp
 p.T_cool = 45; %deg C, target cooling temp
-p.U_n_hold = sqrt (R_n/R_tn*(T_set-T_e));
+p.U_n_hold = sqrt (R_n/R_tn*(p.T_set-T_e));
 
 %ellipse variables from Q1.4
 p.x_c = d_x/2; %m, x center of ellipsoid
@@ -21,7 +21,7 @@ p.y_c = d_y/2; %m, y center of ellipsoid
 p.a = 7e-2; %m, x radius of ellipsoid
 p.b = 5e-2; %m, y radius of ellipsoid
 p.T_p = 10; %s, total print time for 1 ellipse
-p.Omega = (2*pi)/T_p; %rad/s, angular velocity for printing ellipse
+p.Omega = (2*pi)/p.T_p; %rad/s, angular velocity for printing ellipse
 
 %q states
 %(0) q0: "printing", (1) q1: "stopping and saving location", (2) q2: "moving to wipe tower", (3) q3: "wiping"
