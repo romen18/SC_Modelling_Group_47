@@ -4,7 +4,7 @@ close all
 
 run('data/param.m')
 T_dep = 265; %C, deposit temperature of filament
-epsilon_T = 20; %C, tolerance for filament T difference alongth length
+epsilon_T = 10; %C, tolerance for filament T difference alongth length
 a = 7e-2; %m, x radius of ellipsoid
 b = 5e-2; %m, y radius of ellipsoid
 T_p = 10; %s, printing time
@@ -112,3 +112,15 @@ title('Minimum, mean, and maximum filament temperatures after printing')
 legend('T_{max}','T_{mean}','T_{min}','Location','best')
 grid on;
 
+%temperature spread after filament reached uniformity check
+figure;
+hold on;
+plot(t_after, delta_T, 'b', 'LineWidth', 1.5);
+yline(epsilon_T, 'r--', 'LineWidth', 1.5);
+plot(t_uniform, delta_T(idx_uni), 'ro', 'MarkerFaceColor', 'r');
+hold off
+xlabel('Time (s)')
+ylabel('\DeltaT = T_{max} - T_{min} (C)');
+title('Temperature spread over the uniform filament')
+legend('\DeltaT(t)', 'Tolerance \epsilon_T = 1 deg C', 'Uniformity reached', 'Location', 'best');
+grid on;
