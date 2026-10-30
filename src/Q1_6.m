@@ -121,6 +121,6 @@ plot(t_uniform, delta_T(idx_uni), 'ro', 'MarkerFaceColor', 'r');
 hold off
 xlabel('Time (s)')
 ylabel('\DeltaT = T_{max} - T_{min} (C)');
-title('Temperature spread over the uniform filament')
+title('Temperature spread over time')
 legend('\DeltaT(t)', 'Tolerance \epsilon_T = 1 deg C', 'Uniformity reached', 'Location', 'best');
 grid on;
