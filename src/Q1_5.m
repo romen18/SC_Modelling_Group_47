@@ -6,7 +6,7 @@ close all
 run('data/param.m')
 
 %heating up
-t = 0:0.01:500; %time vector
+t = 0:0.01:150; %time vector
 T_n0 = 25; %deg C, initial temperature
 T_set = 265; %deg C, the temperature we want to reach
 tau_n = R_tn*C_tn; %s, time constant of nozzle
@@ -22,7 +22,7 @@ title('Temperature during heating up of nozzle 25 deg C to 265 deg C');
 grid on;
 
 %cooling down
-t = 0:0.01:500; %time vector
+t = 0:0.01:150; %time vector
 U_n_hold = 0; %V, voltage turned off to cool down the nozzle
 T_n0 = 265; %deg C, initial temperature
 tau_n = R_tn*C_tn; %s, time constant of nozzle

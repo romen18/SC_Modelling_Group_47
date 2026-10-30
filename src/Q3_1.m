@@ -56,6 +56,8 @@ function u = input(x,p,q) %calculates u = [u_x, u_y, u_n]
     u = [u_x; u_y; u_n]; %output of function
 end
 
+
+
 function dx = sys(x,u,p)
     %the following equations are all derived in Q1.3 decoupled motion (using epsilon = {x, y})
     %x vector = [x, vx, i_x, y, vy, i_y, T_n]
