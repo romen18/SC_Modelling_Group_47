@@ -10,11 +10,11 @@ p.m = m; p.C_n = C_n; p.C_tn = C_tn; p.R_tn = R_tn; p.R_n = R_n; %tool/nozzle co
 p.T_e = T_e; p.mu_r = mu_r; p.mu_lx = mu_lx; p.mu_ly = mu_ly; p.T_b = T_b; p.d_x = d_x; p.d_y = d_y; %other constants added to p
 p.M = M; p.bx = bx; p.by = by; p.g = g; %simplified parameters added to p
 
-%variables from Q1.5
+%Heating variables from Q1.5
 p.T_set = 265; %deg C, target nozzle temp
 p.U_n_hold = sqrt (R_n/R_tn*(T_set-T_e));
 
-%ellipse variables
+%ellipse variables from Q1.4
 p.x_c = d_x/2; %m, x center of ellipsoid
 p.y_c = d_y/2; %m, y center of ellipsoid
 p.a = 7e-2; %m, x radius of ellipsoid
@@ -29,6 +29,21 @@ p.Omega = (2*pi)/T_p; %rad/s, angular velocity for printing ellipse
 %x vector = [x, vx, i_x, y, vy, i_y, T_n]
 
 q0=0; %start in printing state
+x0 = [p.x_c + p.a; 0; 0; p.y; 0; 0; p.T_set]; %starts at right side of ellipse with temperature on
+
+%simulation parameters for starting ode45
+t=0;
+t_end=500;
+q = q0;
+x = x0;
+
+while t<t_end
+    options = odeset('Events', @guards); %options for ode45 to change states with guard functions
+
+end
+
+function [value, isterminal, direction] = guards(t,x,p,q) %guard function using ode45 syntax
+end
 
 function u = input(x,p,q) %calculates u = [u_x, u_y, u_n]
     switch q
@@ -82,6 +97,6 @@ function dx = sys(x,u,p)
     diy = -p.K_m/(p.r_m*p.L_m)*x(5) -p.R_m/p.L_m*x(6) + 1/p.L_m*u(2);
     
     %from Q1.5, assuming a constant voltage input and thus u_c=u_n
-    dT_n = 1/p.C_tn * (u_n^2/p.R_n - (x(7)-p.T_e)/p.R_tn);
+    dT_n = 1/p.C_tn * (u(3)^2/p.R_n - (x(7)-p.T_e)/p.R_tn);
     dx = [dx_pos; dvx; dix; dy_pos; dvy; diy; dT_n]; %output of function
 end
