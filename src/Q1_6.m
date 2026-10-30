@@ -26,7 +26,7 @@ L = l_path(end); %m, last value of l_path gives total length of ellipse
 ds = L/N; %length of a cell
 s = (1:N)*ds; %creates vector including the position for each cell index
 
-G_cell = rho*cp*A*ds; %thermal capacity of one cell
+C_cell = rho*cp*A*ds; %thermal capacity of one cell
 G = k*A/ds; %thermal conductance between cells
 
 beta_a = 3*h_air/(rho*cp*d); %heat loss coefficient to air
@@ -39,7 +39,7 @@ k_f = floor(t_f/delta_t) + 1; %final simulation index
 k_off = floor(T_p/delta_t) +1; %index when printing finishes
 t = (0:k_f-1)*delta_t; %time vector
 
-T = zeros(N, k_f); %matrix to store solutions
+T = NaN(N, k_f); %matrix to store solutions
 n_a_old = 0; %tracks number of cells printed
 
 %% TIME MARCHING
@@ -48,6 +48,10 @@ for k = 1:(k_f-1)
         n_a = floor(l_path(k)/ds); %number of active cells at step k
         T((n_a_old+1):n_a, k) = T_dep; %all new cells start at temperate T_dep
         n_a_old = n_a;
+
+        if n_a == 0
+            continue
+        end
 
         Phi = zeros(n_a+1, 1); %work vector for flows
         Phi(2:end-1) = (T(1:n_a-1, k) - T(2:n_a, k))*G; %update internal flows
@@ -73,5 +77,26 @@ end
 
 %% PLOTTING
 
-t_after = t(k_off:end)
-T_after = T(: k_off:end)
+T_min = min(T);
+T_max = max(T);
+T_mean = mean(T);
+
+delta_T = T_max - T_min;
+idx_uni = find(delta_T < epsilon_T, 1);
+t_uniform = t(idx_uni);
+
+%filament profiles
+figure;
+hold on;
+t_plot = [2, 5, 10, 20, 40, 60]; %total time elapsed at plot end
+for i = 1:length(t_plot)
+    k_plot = round(t_plot(i)/delta_t)+1;
+    plot(s, T(:, k_plot), 'LineWidth', 1.5);
+end
+hold off;
+xlabel('distance along filament s (m)');
+ylabel('Temperature (deg C)');
+title('temperature along the filament during and after printing');
+legend('t = 2 s', 't = 5 s', 't = 10 s', 't = 20 s', 't = 40 s','t = 60 s','Location','best');
+grid on;
+
