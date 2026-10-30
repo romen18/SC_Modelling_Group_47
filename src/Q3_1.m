@@ -11,8 +11,25 @@ p.T_e = T_e; p.mu_r = mu_r; p.mu_lx = mu_lx; p.mu_ly = mu_ly; p.T_b = T_b; p.d_x
 p.M = M; p.bx = bx; p.by = by; p.g = g; %simplified parameters added to p
 
 %q states
-%(1) q0: "printing", (2) q1: "stopping and saving location", (3) q2: "moving to wipe tower", (4) q3: "wiping"
-%(5) q4: "Nozzle heat off", (6) q5: "loading new filament", (7) q6: "nozzle heat on", (8) q7: "returning to saved location"
+%(0) q0: "printing", (1) q1: "stopping and saving location", (2) q2: "moving to wipe tower", (3) q3: "wiping"
+%(4) q4: "Nozzle heat off", (5) q5: "loading new filament", (6) q6: "nozzle heat on", (7) q7: "returning to saved location"
+
+%x vector = [x, vx, i_x, y, vy, i_y, T_n]^T
+
+q0=0 %start in printing state
+
+function u = input(x,p,q)
+    switch q
+        case 0 %printing
+        case 1 %stopping and saving location
+        case 2 %moving to wipe tower
+        case 3 %wiping
+        case 4 %Nozzle heat off
+        case 5 %loading new filament
+        case 6 %nozzle heat on
+        case 7 %returning to saved location
+    end
+end
 
 function dx = sys(x,u,p,q)
     switch q
