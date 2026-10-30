@@ -34,8 +34,7 @@ x0 = [p.x_c + p.a; 0; 0; p.y_c; 0; 0; p.T_set]; %starts at right side of ellipse
 %empty variables that will be updated in the state machine when the right state is reached
 p.x_save = 0;
 p.y_save = 0; 
-p.t_wipe_start = 0;
-p.t_load_start = 0;
+p.t_jump = 0;
 
 %simulation parameters for starting ode45
 t=0;
@@ -50,7 +49,8 @@ while t<t_end
 
     t=t_current(end); %updates t to start next simulation from the end of this state
     x=x_current(end, :)'; %updates x to start next simulation from the end of this state
-    
+    p.t_jump = t; %saves time when the jump was made (to use for u values of the ellipse)
+
     %adds plot after state ended so you can see per state how it changed (excluding heating, cooling, and loading states)
     if ~(q == 4 | q == 5 | q == 6)
         figure;
@@ -75,20 +75,8 @@ while t<t_end
         p.x_save = x(1); %saves location
         p.y_save = x(4); %saves location
         q = 1; %jumps to q1: stopping
-    elseif q == 1
-        q = 2; %jumps to q2: moving to wipe tower
-    elseif q == 2
-        p.t_wipe_start = t; %saves time when wiping started
-        q = 3; %jumps to q3: wiping
-    elseif q == 3
-        q = 4; %jumps to q4: nozzle heat off
-    elseif q == 4
-        p.t_load_start = t; %saves time when loading started
-        q = 5; %jumps to q5; loading new filametn
-    elseif q == 5
-        q = 6; %jumps to q6: nozzle heat on
-    elseif q == 6
-        q = 7; %jumps to q7: returning to saved location
+    elseif q < 7
+        q = q+1; %jumps to the next state
     elseif q == 7
         q = 0; %jumps to q0: printing
     end
@@ -105,11 +93,11 @@ function [value, isterminal, direction] = guards(t,x,p,q) %guard function using 
         case 2 %moving to wipe tower (stop when distance to (0,0) is <=1mm)
             value = sqrt(x(1)^2 + x(4)^2) -0.001; %position relative to (0,0) squared minus 1mm
         case 3 %wiping (stops when in state 3 for 10 seconds)
-            value = (t-p.t_wipe_start)-10; %10 seconds after wiping started
+            value = (t-p.t_jump)-10; %10 seconds after wiping started
         case 4 %Nozzle heat off (stops when temp reaches below T_cool)
             value = x(7)-p.T_cool;
         case 5 %loading new filament (stops when 20 seconds have passed since started loading)
-            value = (t-p.t_load_start)-20;
+            value = (t-p.t_jump)-20;
         case 6 %nozzle heat on (stops when T_n is within 5 degrees of T_set)
             value = x(7)-(p.T_set-5);
         case 7 %returning to saved location (stop when distance to (x_save,y_save) is <=1mm)
@@ -120,12 +108,13 @@ end
 function u = input(t,x,p,q) %calculates u = [u_x, u_y, u_n]
     switch q
         case 0 %printing
-            vx_d = -p.a*p.Omega*sin(p.Omega*t); %desired x velocity
-            vy_d = p.b*p.Omega*cos(p.Omega*t); %desired y velocity
-            ax_d = -p.a*p.Omega^2*cos(p.Omega*t); %desired x acceleration
-            ay_d = -p.b*p.Omega^2*sin(p.Omega*t); %desired y acceleration
-            jx_d = p.a*p.Omega^3*sin(p.Omega*t); %desired x jerk
-            jy_d = -p.b*p.Omega^3*cos(p.Omega*t); %desired y jerk
+            t_print = t-p.t_jump; %current time since printing state started
+            vx_d = -p.a*p.Omega*sin(p.Omega*t_print); %desired x velocity
+            vy_d = p.b*p.Omega*cos(p.Omega*t_print); %desired y velocity
+            ax_d = -p.a*p.Omega^2*cos(p.Omega*t_print); %desired x acceleration
+            ay_d = -p.b*p.Omega^2*sin(p.Omega*t_print); %desired y acceleration
+            jx_d = p.a*p.Omega^3*sin(p.Omega*t_print); %desired x jerk
+            jy_d = -p.b*p.Omega^3*cos(p.Omega*t_print); %desired y jerk
 
             ix_d = (p.M*ax_d + p.bx*vx_d)/p.g; %desired x current
             iy_d = (p.M*ay_d + p.by*vy_d)/p.g; %desired y current 
