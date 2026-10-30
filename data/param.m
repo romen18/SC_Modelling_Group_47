@@ -23,3 +23,9 @@ mu_ly = 0.03; %N*s/m, Bearing friction linear y-direction
 T_b = 50; %deg C, Print bed temperature
 d_x = 0.3; %m, Print area dimension x
 d_y = 0.3; %m, Print area dimension y
+
+%Simplified parameters, used to make the coede less long
+M = m + 2*J_m/r_m^2; %kg, equivalent mass includijng motor inertia
+bx = mu_lx + 8*mu_r/r_m^2; %N*s/m, total friction x direction
+by = mu_ly + 4*mu_r/r_m^2; %N*s/m, total friction y direction
+g = 2*K_m/r_m; %N*m/A, used to get force instead of torque
