@@ -52,7 +52,7 @@ q_full = [];
 while t<t_end
     options = odeset('Events', @(t,x) guards(t, x, p, q)); %options for ode45 to change states with guard functions at curent time
     %runs ode45 until guard triggers
-    [t_current, x_current] = ode45(@(t,x) sys(x, input(t,x,p,q),p), [t,t_end], x, options);
+    [t_current, x_current, t_event, x_event, i_event] = ode45(@(t,x) sys(x, input(t,x,p,q),p), [t,t_end], x, options);
 
     t=t_current(end); %updates t to start next simulation from the end of this state
     x=x_current(end, :)'; %updates x to start next simulation from the end of this state
@@ -69,6 +69,7 @@ while t<t_end
         plot(x_current(:,1), x_current(:,4), 'LineWidth', 1.5);
         xlabel('x (m)');
         ylabel('y (m)');
+        axis equal;
         title(['Nozzle path during state q', num2str(q)]);
         grid on;
     end
@@ -81,13 +82,16 @@ while t<t_end
         title(['Nozzle temperature during state q', num2str(q)]);
         grid on;
     end
-
+    %if no event happened, skip over the state jumping of this loop
+    if isempty(i_event)
+        break
+    end
     %as the state ended (guard was reached) we can jump to the next state
     if q == 0
         q = 1; %jumps to q1: stopping
     elseif q ==1
-        p.x_save = x_current(end, 1); %saves location
-        p.y_save = x_current(end,4); %saves location
+        p.x_save = x(1); %saves location
+        p.y_save = x(4); %saves location
         q = 2;
     elseif q < 7
         q = q+1; %jumps to the next state
@@ -101,6 +105,7 @@ figure;
 plot(x_full(:,1), x_full(:,4), 'LineWidth', 1.5);
 xlabel('x (m)');
 ylabel('y (m)');
+axis equal;
 title('Nozzle path during full simulation');
 grid on;
 
