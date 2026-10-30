@@ -32,6 +32,7 @@ g = 2*K_m/r_m; %N*m/A, used to get force instead of torque
 
 %parameters used for Q1.6
 d = 0.4e-3; %m, side_length of square filament (standard 0.4mm nozzle)
+A = d^2; %m^2, filament cross section
 rho = 1240; %kg/m^3, density of PLA 
 cp = 1800; %J/(kg*K), specific heat capacity PLA
 k = 0.13; %W/(m*K), thermal conductivity PLA
