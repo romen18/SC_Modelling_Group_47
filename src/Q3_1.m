@@ -63,13 +63,13 @@ while t<t_end
     x_full = [x_full; x_current]; %appends full x state over every t timestep to t_full
     q_full = [q_full; q * ones(length(t_current),1)]; %appends q, t times to q_full
 
-    %adds plot after state ended so you can see per state how it changed (excluding heating, cooling, and loading states)
-    if ~(q == 4 | q == 5 | q == 6)
+    %adds plot after state ended so you can see per state how it changed (excluding wiping, heating, cooling, and loading states)
+    if ~(q == 3 | q == 4 | q == 5 | q == 6)
         figure;
         plot(x_current(:,1), x_current(:,4), 'LineWidth', 1.5);
         xlabel('x (m)');
         ylabel('y (m)');
-        title('Nozzle path during state ', q);
+        title(['Nozzle path during state q', num2str(q)]);
         grid on;
     end
     %if state is cooling or heating plots the temperature
@@ -78,7 +78,7 @@ while t<t_end
         plot(t_current(:),x_current(:,7), 'LineWidth', 1.5);
         ylabel('T (deg C)');
         xlabel('t (s)');
-        title('Nozzle temperature during state ', q);
+        title(['Nozzle temperature during state q', num2str(q)]);
         grid on;
     end
 
