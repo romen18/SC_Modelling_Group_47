@@ -23,7 +23,7 @@ grid on;
 
 %cooling down
 t = 0:0.01:500; %time vector
-U_n_hold = 0; %V, nozzle voltage turned off to cool down the nozzle
+U_n_hold = 0; %V, voltage turned off to cool down the nozzle
 T_n0 = 265; %deg C, initial temperature
 tau_n = R_tn*C_tn; %s, time constant of nozzle
 T_n_eq = T_e + R_tn*U_n_hold^2/R_n; %deg C, the eventual temperature we want to reach
