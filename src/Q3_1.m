@@ -14,45 +14,46 @@ p.M = M; p.bx = bx; p.by = by; p.g = g; %simplified parameters added to p
 %(0) q0: "printing", (1) q1: "stopping and saving location", (2) q2: "moving to wipe tower", (3) q3: "wiping"
 %(4) q4: "Nozzle heat off", (5) q5: "loading new filament", (6) q6: "nozzle heat on", (7) q7: "returning to saved location"
 
-%x vector = [x, vx, i_x, y, vy, i_y, T_n]^T
+%x vector = [x, vx, i_x, y, vy, i_y, T_n]
 
-q0=0 %start in printing state
+q0=0; %start in printing state
 
-function u = input(x,p,q) %calculates u = [u_x, u_y, u_n]^T
+function u = input(x,p,q) %calculates u = [u_x, u_y, u_n]
     switch q
         case 0 %printing
-            u_x = 0 %will be filled later with ellipse input function
-            u_y = 0 %will be filled later with ellipse input function
-            u_n = p.U_n_hold %nozzle voltage to hold temperature at T_set
+            u_x = 0; %will be filled later with ellipse input function
+            u_y = 0; %will be filled later with ellipse input function
+            u_n = p.U_n_hold; %nozzle voltage to hold temperature at T_set
         case 1 %stopping and saving location
-            u_x = 0
-            u_y = 0
-            u_n = p.U_n_hold
+            u_x = 0;
+            u_y = 0;
+            u_n = p.U_n_hold;
         case 2 %moving to wipe tower
-            u_x = 0 %placeholder
-            u_y = 0 %placeholder
-            u_n = p.U_n_hold
+            u_x = 0; %placeholder
+            u_y = 0; %placeholder
+            u_n = p.U_n_hold;
         case 3 %wiping
-            u_x = 0 %placeholder
-            u_y = 0 %placeholder
-            u_n = p.U_n_hold
+            u_x = 0; %placeholder
+            u_y = 0; %placeholder
+            u_n = p.U_n_hold;
         case 4 %Nozzle heat off
-            u_x = 0
-            u_y = 0 
-            u_n = 0 %nozzle voltage turned off to cool down the nozzle
+            u_x = 0;
+            u_y = 0;
+            u_n = 0; %nozzle voltage turned off to cool down the nozzle
         case 5 %loading new filament
-            u_x = 0
-            u_y = 0
-            u_n = 0
+            u_x = 0;
+            u_y = 0;
+            u_n = 0;
         case 6 %nozzle heat on
-            u_x = 0
-            u_y = 0
-            u_n = p.U_n_hold %nozzle voltage to hold temperature at T_set
+            u_x = 0;
+            u_y = 0;
+            u_n = p.U_n_hold; %nozzle voltage to hold temperature at T_set
         case 7 %returning to saved location
-            u_x = 0 %placeholder
-            u_y = 0 %placeholder
-            u_n = p.U_n_hold
+            u_x = 0; %placeholder
+            u_y = 0; %placeholder
+            u_n = p.U_n_hold;
     end
+    u = [u_x; u_y; u_n]; %output of function
 end
 
 function dx = sys(x,u,p,q)
@@ -65,8 +66,24 @@ function dx = sys(x,u,p,q)
         case 5 %loading new filament
         case 6 %nozzle heat on
         case 7 %returning to saved location
-
+    
     end
+    %the following equations are all derived in Q1.3 decoupled motion (using epsilon = {x, y})
+    %x vector = [x, vx, i_x, y, vy, i_y, T_n]
+    %u vector = [u_x, u_y, u_n]
+    %even though we did add a new state T_n, we keep the original 6x6 A1 and add an 1x1 A2 (block diagonal) 
+    %as T_n is not dependent on the first 6 states of x
+    dx_pos = x(2);
+    dvx = -p.bx/p.M*x(2) + p.g/p.M*x(3);
+    dix = -p.K_m/(p.r_m*p.L_m)*x(2) - p.R_m/p.L_m*x(3) + 1/p.L_m*u(1);
+    dy_pos = x(5);
+    dvy = -p.by/p.M*x(5) + p.g/p.M*x(6);
+    diy = -p.K_m/(p.r_m*p.L_m)*x(5) -p.R_m/p.L_m*x(6) + 1/p.L_m*u(2);
+    
+    %from Q1.5
+    dT_n = 0 %placeholder
+
+
 
     dx = [dx_pos; dvx; dix; dy_pos; dvy; diy; dT_n]; %output of function (dx_pos because dx is the function name)
 end
