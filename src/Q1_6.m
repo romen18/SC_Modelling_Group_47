@@ -32,3 +32,32 @@ G = k*A/ds; %thermal conductance between cells
 beta_a = 3*h_air/(rho*cp*d); %heat loss coefficient to air
 beta_b = h_bed/(rho*cp*d); %heat loss coefficient to bed
 
+
+%% INITIALIZATION
+delta_t = 0.001; %time step
+k_f = floor(t_f/delta_t) + 1; %final simulation index
+k_off = floor(T_p/delta_t) +1; %index when printing finishes
+t = (0:k_f-1)*delta_t; %time vector
+
+T = zeros(N, k_f); %matrix to store solutions
+n_a_old = 0; %tracks number of cells printed
+
+%% TIME MARCHING
+for k = 1:(k_f-1)
+    if k<k_off %domain grows during printing
+        n_a = floor(l_path(k)/ds); %number of active cells at step k
+        T((n_a_old+1):n_a, k) = T_dep; %all new cells start at temperate T_dep
+        n_a_old = n_a;
+
+        Phi = zeros(n_a+1, 1); %work vector for flows
+        Phi(2:end-1) = (T(1:n_a-1, k) - T(2:n_a, k))*G; %update internal flows
+        Phi(1) = 0; %boundary condition
+        Phi(end) = 2*G*(T(n_a,k) - T_dep); %boundary condition at nozzle
+
+        Q=3*h_air*d*ds*(T_e - T(1:n_a, k)) + h_bed*d*ds*(T_b - T(1:n_a,k)); %heat exchange 
+        T(1:n_a, k+1) = T(1:n_a, k) + (delta_t/C_cell)*(Phi(1:end-1) - Phi(2:end) + Q); %update cell temperatures
+
+    end
+
+
+end
