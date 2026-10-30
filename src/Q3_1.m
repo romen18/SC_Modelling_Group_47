@@ -18,16 +18,40 @@ p.M = M; p.bx = bx; p.by = by; p.g = g; %simplified parameters added to p
 
 q0=0 %start in printing state
 
-function u = input(x,p,q)
+function u = input(x,p,q) %calculates u = [u_x, u_y, u_n]^T
     switch q
         case 0 %printing
+            u_x = 0 %will be filled later with ellipse input function
+            u_y = 0 %will be filled later with ellipse input function
+            u_n = p.U_n_hold %nozzle voltage to hold temperature at T_set
         case 1 %stopping and saving location
+            u_x = 0
+            u_y = 0
+            u_n = p.U_n_hold
         case 2 %moving to wipe tower
+            u_x = 0 %placeholder
+            u_y = 0 %placeholder
+            u_n = p.U_n_hold
         case 3 %wiping
+            u_x = 0 %placeholder
+            u_y = 0 %placeholder
+            u_n = p.U_n_hold
         case 4 %Nozzle heat off
+            u_x = 0
+            u_y = 0 
+            u_n = 0 %nozzle voltage turned off to cool down the nozzle
         case 5 %loading new filament
+            u_x = 0
+            u_y = 0
+            u_n = 0
         case 6 %nozzle heat on
+            u_x = 0
+            u_y = 0
+            u_n = p.U_n_hold %nozzle voltage to hold temperature at T_set
         case 7 %returning to saved location
+            u_x = 0 %placeholder
+            u_y = 0 %placeholder
+            u_n = p.U_n_hold
     end
 end
 
