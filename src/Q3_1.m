@@ -64,24 +64,24 @@ while t<t_end
     q_full = [q_full; q * ones(length(t_current),1)]; %appends q, t times to q_full
 
     %adds plot after state ended so you can see per state how it changed (excluding wiping, heating, cooling, and loading states)
-    if ~(q == 3 | q == 4 | q == 5 | q == 6)
-        figure;
-        plot(x_current(:,1), x_current(:,4), 'LineWidth', 1.5);
-        xlabel('x (m)');
-        ylabel('y (m)');
-        axis equal;
-        title(['Nozzle path during state q', num2str(q)]);
-        grid on;
-    end
+    % if ~(q == 4 | q == 5 | q == 6)
+    %     figure;
+    %     plot(x_current(:,1), x_current(:,4), 'LineWidth', 1.5);
+    %     xlabel('x (m)');
+    %     ylabel('y (m)');
+    %     axis equal;
+    %     title(['Nozzle path during state q', num2str(q)]);
+    %     grid on;
+    % end
     %if state is cooling or heating plots the temperature
-    if q == 4 || q==6
-        figure;
-        plot(t_current(:),x_current(:,7), 'LineWidth', 1.5);
-        ylabel('T (deg C)');
-        xlabel('t (s)');
-        title(['Nozzle temperature during state q', num2str(q)]);
-        grid on;
-    end
+    % if q == 4 || q==6
+    %     figure;
+    %     plot(t_current(:),x_current(:,7), 'LineWidth', 1.5);
+    %     ylabel('T (deg C)');
+    %     xlabel('t (s)');
+    %     title(['Nozzle temperature during state q', num2str(q)]);
+    %     grid on;
+    % end
     %if no event happened, skip over the state jumping of this loop
     if isempty(i_event)
         break
@@ -186,7 +186,7 @@ function u = input(t,x,p,q) %calculates u = [u_x, u_y, u_n]
             u_y = -x(4); %if y>0 u_y pulls it down
             u_n = p.U_n_hold;
         case 3 %wiping
-            u_x = 0; %stays still while wiping is being done 
+            u_x = 0.1*cos((t-p.t_jump)*4); %moves the nozzle a bit in x-direction to wipe 
             u_y = 0; %stays still while wiping is being done
             u_n = p.U_n_hold;
         case 4 %Nozzle heat off
