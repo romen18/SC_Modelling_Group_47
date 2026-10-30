@@ -44,8 +44,35 @@ q = q0;
 x = x0;
 
 while t<t_end
-    options = odeset('Events', @guards); %options for ode45 to change states with guard functions
+    options = odeset('Events', @(t,x) guards(t, x, p, q)); %options for ode45 to change states with guard functions at curent time
+    %runs ode45 until guard triggers
+    [t_current, x_current] = ode45(@(t,x) sys(x, input(t,x,p,q),p), [t,t_end], x, options);
 
+    t=t_current(end); %updates t to start next simulation from the end of this state
+    x=x_current(end, :)'; %updates x to start next simulation from the end of this state
+
+    %as the state ended (guard was reached) we can jump to the next state
+    if q == 0
+        p.x_save = x(1); %saves location
+        p.y_save = x(4); %saves location
+        q = 1; %moves to q1: stopping
+    elseif q == 1
+        q = 2; %moves to q2: moving to wipe tower
+    elseif q == 2
+        p.t_wipe_start = t; %saves time when wiping started
+        q = 3; %moves to q3: wiping
+    elseif q == 3
+        q = 4; %moves to q4: nozzle heat off
+    elseif q == 4
+        p.t_load_start = t;
+        q = 5;
+    elseif q == 5
+        q = 6;
+    elseif q == 6
+        q = 7;
+    elseif q == 7
+        q = 0;
+    end
 end
 
 function [value, isterminal, direction] = guards(t,x,p,q) %guard function using ode45 syntax
