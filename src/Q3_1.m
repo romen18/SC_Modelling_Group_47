@@ -50,28 +50,47 @@ while t<t_end
 
     t=t_current(end); %updates t to start next simulation from the end of this state
     x=x_current(end, :)'; %updates x to start next simulation from the end of this state
+    
+    %adds plot after state ended so you can see per state how it changed (excluding heating, cooling, and loading states)
+    if ~(q == 4 | q == 5 | q == 6)
+        figure;
+        plot(x_current(:,1), x_current(:,4), 'LineWidth', 1.5);
+        xlabel('x (m)');
+        ylabel('y (m)');
+        title('Nozzle path during state ', q);
+        grid on;
+    end
+    %if state is cooling or heating plots the temperature
+    if q == 4 || q==6
+        figure;
+        plot(t_current(:),x_current(:,7), 'LineWidth', 1.5);
+        xlabel('T (deg C)');
+        ylabel('t (s)');
+        title('Nozzle temperature during state ', q);
+        grid on;
+    end
 
     %as the state ended (guard was reached) we can jump to the next state
     if q == 0
         p.x_save = x(1); %saves location
         p.y_save = x(4); %saves location
-        q = 1; %moves to q1: stopping
+        q = 1; %jumps to q1: stopping
     elseif q == 1
-        q = 2; %moves to q2: moving to wipe tower
+        q = 2; %jumps to q2: moving to wipe tower
     elseif q == 2
         p.t_wipe_start = t; %saves time when wiping started
-        q = 3; %moves to q3: wiping
+        q = 3; %jumps to q3: wiping
     elseif q == 3
-        q = 4; %moves to q4: nozzle heat off
+        q = 4; %jumps to q4: nozzle heat off
     elseif q == 4
-        p.t_load_start = t;
-        q = 5;
+        p.t_load_start = t; %saves time when loading started
+        q = 5; %jumps to q5; loading new filametn
     elseif q == 5
-        q = 6;
+        q = 6; %jumps to q6: nozzle heat on
     elseif q == 6
-        q = 7;
+        q = 7; %jumps to q7: returning to saved location
     elseif q == 7
-        q = 0;
+        q = 0; %jumps to q0: printing
     end
 end
 
