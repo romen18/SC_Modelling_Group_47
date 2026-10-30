@@ -58,12 +58,12 @@ function [value, isterminal, direction] = guards(t,x,p,q) %guard function using 
             value = sqrt(x(2)^2 + x(5)^2)-0.0001; %total speed is less than 0.1mm/s
         case 2 %moving to wipe tower (stop when distance to (0,0) is <=1mm)
             value = sqrt(x(1)^2 + x(4)^2) -0.001; %position relative to (0,0) squared minus 1mm
-        case 3 %wiping
-            %should stop after being in state 3 for 10 seconds
+        case 3 %wiping (stops when in state 3 for 10 seconds)
+            value = (t-p.t_wipe_start)-10; %10 seconds after wiping started
         case 4 %Nozzle heat off (stops when temp reaches below T_cool)
             value = x(7)-p.T_cool;
-        case 5 %loading new filament (stops when 20 seconds have passed)
-            %should stop after 20 seconds of being in state 5
+        case 5 %loading new filament (stops when 20 seconds have passed since started loading)
+            value = (t-p.t_load_start)-20;
         case 6 %nozzle heat on (stops when T_n is within 5 degrees of T_set)
             value = x(7)-(p.T_set-5);
         case 7 %returning to saved location (stop when distance to (x_save,y_save) is <=1mm)
