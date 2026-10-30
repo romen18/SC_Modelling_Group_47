@@ -84,8 +84,8 @@ while t<t_end
 
     %as the state ended (guard was reached) we can jump to the next state
     if q == 0
-        p.x_save = x(1); %saves location
-        p.y_save = x(4); %saves location
+        p.x_save = x_current(end, 1); %saves location
+        p.y_save = x_current(end, 4); %saves location
         q = 1; %jumps to q1: stopping
     elseif q < 7
         q = q+1; %jumps to the next state
@@ -145,8 +145,8 @@ function [value, isterminal, direction] = guards(t,x,p,q) %guard function using 
             value = (t-p.t_jump)-20;
         case 6 %nozzle heat on (stops when T_n is within 5 degrees of T_set)
             value = x(7)-(p.T_set-5);
-        case 7 %returning to saved location (stop when distance to (x_save,y_save) is <=1mm)
-            value = sqrt((x(1)-p.x_save)^2 + (x(4)-p.y_save)^2) - 0.001;
+        case 7 %returning to saved location (stop when distance to (x_save,y_save) is <=0.1mm)
+            value = sqrt((x(1)-p.x_save)^2 + (x(4)-p.y_save)^2) - 0.0001;
     end
 end
 
