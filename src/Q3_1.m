@@ -71,11 +71,24 @@ function [value, isterminal, direction] = guards(t,x,p,q) %guard function using 
     end
 end
 
-function u = input(x,p,q) %calculates u = [u_x, u_y, u_n]
+function u = input(t,x,p,q) %calculates u = [u_x, u_y, u_n]
     switch q
         case 0 %printing
-            u_x = 0; %will be filled later with ellipse input function
-            u_y = 0; %will be filled later with ellipse input function
+            vx_d = -p.a*p.Omega*sin(p.Omega*t); %desired x velocity
+            vy_d = p.b*p.Omega*cos(p.Omega*t); %desired y velocity
+            ax_d = -p.a*p.Omega^2*cos(p.Omega*t); %desired x acceleration
+            ay_d = -p.b*p.Omega^2*sin(p.Omega*t); %desired y acceleration
+            jx_d = p.a*p.Omega^3*sin(p.Omega*t); %desired x jerk
+            jy_d = -p.b*p.Omega^3*cos(p.Omega*t); %desired y jerk
+
+            ix_d = (p.M*ax_d + p.bx*vx_d)/p.g; %desired x current
+            iy_d = (p.M*ay_d + p.by*vy_d)/p.g; %desired y current 
+            ix_d_dot = (p.M*jx_d + p.bx*ax_d)/p.g; %desired x change in current
+            iy_d_dot = (p.M*jy_d + p.by*ay_d)/p.g; %desired y change in current
+
+            u_x = p.L_m*ix_d_dot + p.R_m*ix_d + p.K_m*vx_d/p.r_m;
+            u_y = p.L_m*iy_d_dot + p.R_m*iy_d + p.K_m*vy_d/p.r_m;
+
             u_n = p.U_n_hold; %nozzle voltage to hold temperature at T_set
         case 1 %stopping and saving location
             u_x = 0;
