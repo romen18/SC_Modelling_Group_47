@@ -95,12 +95,12 @@ function u = input(t,x,p,q) %calculates u = [u_x, u_y, u_n]
             u_y = 0;
             u_n = p.U_n_hold;
         case 2 %moving to wipe tower
-            u_x = 0; %placeholder
-            u_y = 0; %placeholder
+            u_x = -x(1); %if x>0 u_x pulls it to the left 
+            u_y = -x(4); %if y>0 u_y pulls it down
             u_n = p.U_n_hold;
         case 3 %wiping
-            u_x = 0; %placeholder
-            u_y = 0; %placeholder
+            u_x = 0; %stays still while wiping is being done 
+            u_y = 0; %stays still while wiping is being done
             u_n = p.U_n_hold;
         case 4 %Nozzle heat off
             u_x = 0;
@@ -115,8 +115,8 @@ function u = input(t,x,p,q) %calculates u = [u_x, u_y, u_n]
             u_y = 0;
             u_n = p.U_n_hold; %nozzle voltage to hold temperature at T_set
         case 7 %returning to saved location
-            u_x = 0; %placeholder
-            u_y = 0; %placeholder
+            u_x = p.x_save - x(1); %makes u_x positive if x_save>x
+            u_y = p.y_save - x(4); %makes u_y positive if y_save>y
             u_n = p.U_n_hold;
     end
     u = [u_x; u_y; u_n]; %output of function
