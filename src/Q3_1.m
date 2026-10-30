@@ -12,6 +12,7 @@ p.M = M; p.bx = bx; p.by = by; p.g = g; %simplified parameters added to p
 
 %Heating variables from Q1.5
 p.T_set = 265; %deg C, target nozzle temp
+p.T_cool = 45; %deg C, target cooling temp
 p.U_n_hold = sqrt (R_n/R_tn*(T_set-T_e));
 
 %ellipse variables from Q1.4
@@ -30,6 +31,11 @@ p.Omega = (2*pi)/T_p; %rad/s, angular velocity for printing ellipse
 
 q0=0; %start in printing state
 x0 = [p.x_c + p.a; 0; 0; p.y; 0; 0; p.T_set]; %starts at right side of ellipse with temperature on
+%empty variables that will be updated in the state machine when the right state is reached
+p.x_save = 0;
+p.y_save = 0; 
+p.t_wipe_start = 0;
+p.t_load_start = 0;
 
 %simulation parameters for starting ode45
 t=0;
@@ -43,6 +49,26 @@ while t<t_end
 end
 
 function [value, isterminal, direction] = guards(t,x,p,q) %guard function using ode45 syntax
+    isterminal = 1; %this stops ode45 when the value reaches 0
+    direction =  0; %switches states if 0 is crossed from either above or below
+    switch q
+        case 0 %printing (stops when ellipse is finished)
+            value = t - p.T_p; %time_printing minus the time required to draw an ellipse
+        case 1 %stopping and saving location (stops when the speed succesfully reached very close to 0)
+            value = sqrt(x(2)^2 + x(5)^2)-0.0001; %total speed is less than 0.1mm/s
+        case 2 %moving to wipe tower (stop when distance to (0,0) is <=1mm)
+            value = sqrt(x(1)^2 + x(4)^2) -0.001; %position relative to (0,0) squared minus 1mm
+        case 3 %wiping
+            %should stop after being in state 3 for 10 seconds
+        case 4 %Nozzle heat off (stops when temp reaches below T_cool)
+            value = x(7)-p.T_cool;
+        case 5 %loading new filament (stops when 20 seconds have passed)
+            %should stop after 20 seconds of being in state 5
+        case 6 %nozzle heat on (stops when T_n is within 5 degrees of T_set)
+            value = x(7)-(p.T_set-5);
+        case 7 %returning to saved location (stop when distance to (x_save,y_save) is <=1mm)
+            value = sqrt((x(1)-p.x_save)^2 + (x(4)-p.y_save)^2) - 0.001;
+    end
 end
 
 function u = input(x,p,q) %calculates u = [u_x, u_y, u_n]
