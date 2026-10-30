@@ -56,24 +56,13 @@ function u = input(x,p,q) %calculates u = [u_x, u_y, u_n]
     u = [u_x; u_y; u_n]; %output of function
 end
 
-function dx = sys(x,u,p,q)
-    switch q
-        case 0 %printing
-        case 1 %stopping and saving location
-        case 2 %moving to wipe tower
-        case 3 %wiping
-        case 4 %Nozzle heat off
-        case 5 %loading new filament
-        case 6 %nozzle heat on
-        case 7 %returning to saved location
-    
-    end
+function dx = sys(x,u,p)
     %the following equations are all derived in Q1.3 decoupled motion (using epsilon = {x, y})
     %x vector = [x, vx, i_x, y, vy, i_y, T_n]
     %u vector = [u_x, u_y, u_n]
     %even though we did add a new state T_n, we keep the original 6x6 A1 and add an 1x1 A2 (block diagonal) 
     %as T_n is not dependent on the first 6 states of x
-    dx_pos = x(2);
+    dx_pos = x(2); %dx_pos as dx is the function variable
     dvx = -p.bx/p.M*x(2) + p.g/p.M*x(3);
     dix = -p.K_m/(p.r_m*p.L_m)*x(2) - p.R_m/p.L_m*x(3) + 1/p.L_m*u(1);
     dy_pos = x(5);
@@ -82,6 +71,5 @@ function dx = sys(x,u,p,q)
     
     %from Q1.5, assuming a constant voltage input and thus u_c=u_n
     dT_n = 1/p.C_tn * (u_n^2/p.R_n - (x(7)-p.T_e)/p.R_tn);
-
-    dx = [dx_pos; dvx; dix; dy_pos; dvy; diy; dT_n]; %output of function (dx_pos because dx is the function name)
+    dx = [dx_pos; dvx; dix; dy_pos; dvy; diy; dT_n]; %output of function
 end
