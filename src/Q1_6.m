@@ -29,10 +29,6 @@ s = (1:N)*ds; %creates vector including the position for each cell index
 C_cell = rho*cp*A*ds; %thermal capacity of one cell
 G = k*A/ds; %thermal conductance between cells
 
-beta_a = 3*h_air/(rho*cp*d); %heat loss coefficient to air
-beta_b = h_bed/(rho*cp*d); %heat loss coefficient to bed
-
-
 %% INITIALIZATION
 delta_t = 0.001; %time step
 k_f = floor(t_f/delta_t) + 1; %final simulation index
@@ -77,13 +73,14 @@ end
 
 %% PLOTTING
 
-T_min = min(T);
-T_max = max(T);
-T_mean = mean(T);
+T_min = min(T(:, k_off:end));
+T_max = max(T(:, k_off:end));
+T_mean = mean(T(:, k_off:end));
 
 delta_T = T_max - T_min;
 idx_uni = find(delta_T < epsilon_T, 1);
-t_uniform = t(idx_uni);
+t_after = t(k_off:end); %time after print has finished
+t_uniform = t_after(idx_uni);
 
 %filament profiles
 figure;
@@ -98,5 +95,20 @@ xlabel('distance along filament s (m)');
 ylabel('Temperature (deg C)');
 title('temperature along the filament during and after printing');
 legend('t = 2 s', 't = 5 s', 't = 10 s', 't = 20 s', 't = 40 s','t = 60 s','Location','best');
+grid on;
+
+%filament cooling after printing
+T_inf = (3*h_air*T_e + h_bed*T_b)/(3*h_air + h_bed); %equilibrium temperature
+figure;
+hold on;
+plot(t_after, T_max, 'r', 'LineWidth', 1.5);
+plot(t_after, T_mean, '--c', 'LineWidth', 1.5);
+plot(t_after, T_min, 'b', 'LineWidth', 1.5);
+yline(T_inf, 'k:', 'LineWidth', 1.2);
+hold off;
+xlabel('Time (s)');
+ylabel('Temperature (deg C)');
+title('Minimum, mean, and maximum filament temperatures after printing')
+legend('T_{max}','T_{mean}','T_{min}','Location','best')
 grid on;
 
