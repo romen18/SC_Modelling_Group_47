@@ -54,10 +54,24 @@ for k = 1:(k_f-1)
         Phi(1) = 0; %boundary condition
         Phi(end) = 2*G*(T(n_a,k) - T_dep); %boundary condition at nozzle
 
-        Q=3*h_air*d*ds*(T_e - T(1:n_a, k)) + h_bed*d*ds*(T_b - T(1:n_a,k)); %heat exchange 
+        Q=3*h_air*d*ds*(T_e - T(1:n_a, k)) + h_bed*d*ds*(T_b - T(1:n_a,k)); %heat exchange with air and bed
         T(1:n_a, k+1) = T(1:n_a, k) + (delta_t/C_cell)*(Phi(1:end-1) - Phi(2:end) + Q); %update cell temperatures
 
+    else %after printing finishes
+        T((n_a_old+1):N,k) = T_dep; %updates cells printed during final timestep
+        n_a_old = N;
+
+        Phi = zeros(N+1,1); %matrix to store solutions
+        Phi(2:end-1) = (T(1:end-1, k) - T(2:end, k))*G; %update internal flows
+        Phi(end) = (T(end,k)-T(1,k))*G; %boundary condition when loop is complete
+        Phi(1) = Phi(end); %boundaries touching
+
+        Q=3*h_air*d*ds*(T_e - T(:, k)) + h_bed*d*ds*(T_b - T(:,k)); %heat exchange with air and bed
+        T(:, k+1) = T(:, k) + (delta_t/C_cell)*(Phi(1:end-1) - Phi(2:end) + Q); %update cell temperatures
     end
-
-
 end
+
+%% PLOTTING
+
+t_after = t(k_off:end)
+T_after = T(: k_off:end)
