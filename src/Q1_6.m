@@ -122,5 +122,5 @@ hold off
 xlabel('Time (s)')
 ylabel('\DeltaT = T_{max} - T_{min} (C)');
 title('Temperature spread over time')
-legend('\DeltaT(t)', 'Tolerance \epsilon_T = 1 deg C', 'Uniformity reached', 'Location', 'best');
+legend('\DeltaT(t)', 'Tolerance \epsilon_T = 10 deg C', 'Uniformity reached', 'Location', 'best');
 grid on;
