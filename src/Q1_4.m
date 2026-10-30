@@ -21,7 +21,6 @@ T_p = 10; %s, total print time
 %initial values and A,B,C,D 
 % with x = [x, vx, i_x, y, vy, i_y]^T
 % and u = [u_x, u_y]^T
-x0 = [x_c+a, 0, 0, y_c, 0, 0]; %initial state, starting at right side of ellipsoid
 A = [0, 1, 0,                    0, 0, 0;
     0, -bx/M, g/M,               0, 0, 0;
     0, -K_m/(r_m*L_m), -R_m/L_m, 0, 0, 0;
@@ -62,6 +61,9 @@ u_y = L_m*iy_d_dot + R_m*iy_d + K_m*vy_d/r_m;
 
 u = [u_x; u_y]; %control input vector
 
+x0 = [x_d(1), vx_d(1), ix_d(1), y_d(1), vy_d(1), iy_d(1)]; %initial state, starting at right side of ellipsoid
+
+
 %state space simulation
 sys = ss(A,B,C,D); 
 [y, t_out, x] = lsim(sys, u, t, x0); %simulate system
@@ -96,7 +98,6 @@ a = 7e-2; %m, x average radius of flower
 epsilon = 0.3; %m, flower petal size
 T_p = 10; %s, total print time
 
-x0 = [x_c + a + a*epsilon, 0, 0, y_c, 0, 0]; %initial state, starting at right side of ellipsoid
 
 %u calculation for flower
 Omega = (2*pi)/T_p; %rad/s, angular velocity
@@ -118,6 +119,9 @@ u_x = L_m*ix_d_dot + R_m*ix_d + K_m*vx_d/r_m;
 u_y = L_m*iy_d_dot + R_m*iy_d + K_m*vy_d/r_m;
 
 u = [u_x; u_y]; %control input vector
+
+x0 = [x_d(1), vx_d(1), ix_d(1), y_d(1), vy_d(1), iy_d(1)]; %initial state, starting at right side of ellipsoid
+
 
 %state space simulation
 sys = ss(A,B,C,D); 
