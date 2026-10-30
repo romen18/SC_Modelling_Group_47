@@ -35,6 +35,7 @@ x0 = [p.x_c + p.a; 0; 0; p.y_c; 0; 0; p.T_set]; %starts at right side of ellipse
 p.x_save = 0;
 p.y_save = 0; 
 p.t_jump = 0;
+p.new_filament_required = true;
 
 %simulation parameters for starting ode45
 t=0;
@@ -90,6 +91,7 @@ while t<t_end
         q = q+1; %jumps to the next state
     elseif q == 7
         q = 0; %jumps to q0: printing
+        p.new_filament_required = false; %filament is already replaced
     end
 end
 
@@ -125,8 +127,12 @@ function [value, isterminal, direction] = guards(t,x,p,q) %guard function using 
     isterminal = 1; %this stops ode45 when the value reaches 0
     direction =  0; %switches states if 0 is crossed from either above or below
     switch q
-        case 0 %printing (stops when ellipse is finished)
-            value = p.t_jump - p.T_p; %time_printing minus the time required to draw an ellipse
+        case 0 %printing (stops when ellipse is finished and new filament is required)
+            if p.new_filament_required
+                value = (t-p.t_jump) - p.T_p; %time_printing minus the time required to draw an ellipse
+            else
+                value = 1; %never switches when a new filament roll has been put on
+            end
         case 1 %stopping and saving location (stops when the speed succesfully reached very close to 0)
             value = sqrt(x(2)^2 + x(5)^2)-0.0001; %total speed is less than 0.1mm/s
         case 2 %moving to wipe tower (stop when distance to (0,0) is <=1mm)
